@@ -13,7 +13,7 @@ RUN mkdir -p /javafx-sdk \
     && mv /javafx-sdk/javafx-sdk-21.0.2/lib /javafx-sdk/lib \
     && rm -rf /javafx-sdk/javafx-sdk-21.0.2 javafx.zip
 
-COPY target/javashoppingcartwithlocalizationUI-1.0-SNAPSHOT.jar app.jar
+COPY target/javashoppingcartwithlocalizationUIDB-1.0-SNAPSHOT.jar app.jar
 
 ENV DISPLAY=host.docker.internal:0.0
 
