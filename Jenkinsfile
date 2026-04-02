@@ -24,7 +24,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/THANH0201/JavaShoppingCartwithLocalizationuidb.git'
+                git branch: 'main', url: 'https://github.com/THANH0201/javashoppingcartwithlocalizationuidb.git'
             }
         }
 
