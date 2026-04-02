@@ -73,6 +73,19 @@ VALUES ('en', 'English'),
        ('ar', 'العربية'),
        ('se', 'Svenska');
 ```
+- cart_items management bases on language  
+```
+SELECT 
+    i.item_number,
+    ls.value AS localized_item_name,
+    i.price,
+    i.quantity,
+    i.subtotal
+FROM cart_items i
+JOIN localization_strings ls 
+    ON ls.key = i.item_name
+WHERE ls.language = 'ja';
+```
 #### Localization Package (Backend Implementation)
 
 ##### 1. `localization.entity`

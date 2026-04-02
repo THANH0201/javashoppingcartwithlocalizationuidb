@@ -13,16 +13,17 @@ import java.util.List;
 public class CartItemDao {
 
     public void insert(CartItemEntity item) throws SQLException {
-        String sql = "INSERT INTO cart_items (cart_record_id, item_number, price, quantity, subtotal) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO cart_items (cart_record_id, item_number, item_name, price, quantity, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, item.getCartRecordId());
             ps.setInt(2, item.getItemNumber());
-            ps.setDouble(3, item.getPrice());
-            ps.setInt(4, item.getQuantity());
-            ps.setDouble(5, item.getSubtotal());
+            ps.setString(3, item.getItemName());
+            ps.setDouble(4, item.getPrice());
+            ps.setDouble(5, item.getQuantity());
+            ps.setDouble(6, item.getSubtotal());
             ps.executeUpdate();
         }
     }
@@ -42,6 +43,7 @@ public class CartItemDao {
                 item.setId(rs.getInt("id"));
                 item.setCartRecordId(rs.getInt("cart_record_id"));
                 item.setItemNumber(rs.getInt("item_number"));
+                item.setItemName(rs.getString("item_name"));
                 item.setPrice(rs.getDouble("price"));
                 item.setQuantity(rs.getInt("quantity"));
                 item.setSubtotal(rs.getDouble("subtotal"));

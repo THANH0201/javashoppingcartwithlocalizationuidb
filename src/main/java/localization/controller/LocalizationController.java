@@ -2,6 +2,7 @@ package localization.controller;
 
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import localization.utils.I18nAnnotations;
 
 import java.lang.reflect.Field;
 import java.util.Locale;

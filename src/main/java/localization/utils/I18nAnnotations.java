@@ -1,4 +1,4 @@
-package localization.controller;
+package localization.utils;
 
 import java.lang.annotation.*;
 
@@ -38,4 +38,5 @@ public final class I18nAnnotations {
     public @interface Header {
         String value();
     }
+
 }

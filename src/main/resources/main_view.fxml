@@ -120,12 +120,6 @@
         </HBox>
 
         <HBox maxWidth="Infinity">
-            <Label fx:id="afterTaxLabelText" text="" />
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="afterTaxLabel"/>
-        </HBox>
-
-        <HBox maxWidth="Infinity">
             <Label fx:id="finalTotalLabelText" text="" />
             <Region HBox.hgrow="ALWAYS"/>
             <Label fx:id="finalTotalLabel" styleClass="title-label"/>

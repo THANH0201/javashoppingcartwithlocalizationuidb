@@ -6,12 +6,12 @@ public class CartItemEntity {
     private int itemNumber;
     private String itemName;
     private double price;
-    private int quantity;
+    private double quantity;
     private double subtotal;
 
     public CartItemEntity   () {}
 
-    public CartItemEntity(int cartRecordId, int itemNumber, String itemName, double price, int quantity) {
+    public CartItemEntity(int cartRecordId, int itemNumber, String itemName, double price, double quantity) {
         this.cartRecordId = cartRecordId;
         this.itemNumber = itemNumber;
         this.itemName = itemName;
@@ -36,7 +36,7 @@ public class CartItemEntity {
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }
 
-    public int getQuantity() { return quantity; }
+    public double getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
     public double getSubtotal() { return subtotal; }

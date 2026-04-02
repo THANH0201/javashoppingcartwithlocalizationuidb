@@ -1,4 +1,4 @@
-package localization.service;
+package localization;
 
 import localization.dao.LocalizationStringDao;
 import localization.entity.LocalizationStringEntity;

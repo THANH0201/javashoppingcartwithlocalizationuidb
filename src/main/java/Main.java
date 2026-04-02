@@ -2,7 +2,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import view.ViewLoader;
 
-import java.util.Locale;
 
 public class Main extends Application {
 

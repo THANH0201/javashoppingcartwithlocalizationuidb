@@ -1,32 +1,33 @@
 package localization.service;
 
-import java.sql.*;
+import localization.dao.LocalizationStringDao;
+
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import localization.dao.LocalizationStringDao;
+
 
 public class LocalizationService {
 
-    private static Map<String, String> currentStrings;
-    private static final LocalizationStringDao dao = new LocalizationStringDao();
-    private LocalizationService() {}
+    private final LocalizationStringDao dao;
 
-    /**
-     * Load all localized strings from database for the given locale.
-     */
-    public static Map<String, String> getLocalizedStrings(Locale locale) {
+    public LocalizationService(LocalizationStringDao dao) {
+        this.dao = dao;
+    }
+
+    public Map<String, String> getLocalizedStrings(Locale locale) {
         String lang = locale.getLanguage();
-
         Map<String, String> strings = dao.findAllByLanguage(lang);
 
         if (strings == null || strings.isEmpty()) {
             strings = getFallbackStrings();
         }
 
-        currentStrings = strings;
         return strings;
     }
+    /**
+     * Translate key → localized text
+     */
 
     private static Map<String, String> getFallbackStrings() {
         Map<String, String> strings = new LinkedHashMap<>();
@@ -49,14 +50,6 @@ public class LocalizationService {
         strings.put("thanks", "Thank you for your purchase!");
         strings.put("sorry", "Payment cancelled.");
         return strings;
-    }
-
-    /**
-     * Translate key → localized text
-     */
-    public static String t(String key) {
-        if (currentStrings == null) return key;
-        return currentStrings.getOrDefault(key, key);
     }
 
 }

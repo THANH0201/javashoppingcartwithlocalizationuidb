@@ -4,8 +4,10 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
-import localization.controller.I18nAnnotations;
+import localization.utils.I18n;
+import localization.utils.I18nAnnotations;
 import localization.dao.LanguageDao;
+import localization.dao.LocalizationStringDao;
 import localization.entity.Language;
 import model.dao.CartItemDao;
 import model.dao.CartRecordDao;
@@ -26,8 +28,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static localization.service.LocalizationService.t;
-
+import static localization.utils.I18n.t;
 
 public class MainViewController extends LocalizationController {
     // UI elements
@@ -41,6 +42,7 @@ public class MainViewController extends LocalizationController {
     private VBox itemSection;
     @FXML
     private VBox rootVBox;
+    @I18nAnnotations.Text("language.current")
     @FXML
     private MenuButton languageMenu;
     @I18nAnnotations.Text("titleLabel")
@@ -115,6 +117,8 @@ public class MainViewController extends LocalizationController {
     private final CartRecordDao recordDao = new CartRecordDao();
     private final CartItemDao itemDao = new CartItemDao();
     private final Map<String, CartItemEntity> cart = new HashMap<>();
+    private final LocalizationStringDao localizationDao = new LocalizationStringDao();
+    private final LocalizationService localizationService = new LocalizationService(localizationDao);
 
     /**
      * Initialize controller
@@ -122,9 +126,25 @@ public class MainViewController extends LocalizationController {
     @FXML
     public void initialize() {
         loadLanguageMenu();
+
         setLanguage(currentLocale);
+
+        itemList.setCellFactory(list -> new ListCell<>() {
+            @Override
+            protected void updateItem(String key, boolean empty) {
+                super.updateItem(key, empty);
+                if (empty || key == null) {
+                    setText(null);
+                } else {
+                    setText(t(key));
+                }
+            }
+        });
+
         cartSection.setVisible(false);
+
         startUtcClock();
+
     }
 
     private void startUtcClock() {
@@ -196,7 +216,8 @@ public class MainViewController extends LocalizationController {
      */
     private void setLanguage(Locale locale) {
         currentLocale = locale;
-        localizedStrings = LocalizationService.getLocalizedStrings(locale);
+        localizedStrings = localizationService.getLocalizedStrings(locale);
+        I18n.load(localizedStrings);
         applyLocalization();
 
         // Reset font
@@ -210,7 +231,6 @@ public class MainViewController extends LocalizationController {
         else {
             rootVBox.setStyle("-fx-font-family: 'Inter';");
         }
-        languageMenu.setText(t("language.current"));
         loadItemList();
 
         applyTextDirection(locale);
@@ -223,12 +243,12 @@ public class MainViewController extends LocalizationController {
     private void loadItemList() {
         itemList.getItems().clear();
         // default
-        itemList.getItems().add(t("shopping.select.item"));
+        itemList.getItems().add("shopping.select.item");
 
         localizedStrings.keySet().stream()
                 .filter(key -> key.startsWith("item."))
                 .sorted()
-                .forEach(key -> itemList.getItems().add(t(key)));
+                .forEach(key -> itemList.getItems().add(key));
     }
 
     /**
@@ -237,22 +257,24 @@ public class MainViewController extends LocalizationController {
     @FXML
     private void onAddItem() {
         try {
-            String itemName = itemList.getSelectionModel().getSelectedItem();
-            if (itemName == null || itemName.equals(t("shopping.select.item"))) {
+            String key = itemList.getSelectionModel().getSelectedItem();
+
+            if (key == null || key.equals("shopping.select.item")) {
                 showAlert(t("error.invalid_input"));
                 return;
             }
 
             double price = Double.parseDouble(priceField.getText());
-            int qty = Integer.parseInt(quantityField.getText());
+            double qty = Double.parseDouble(quantityField.getText());
 
             // itemNumber = cart.size() + 1
-            CartItemEntity item = new CartItemEntity(0, cart.size() + 1, itemName, price, qty);
-            cart.put(itemName, item);
+            CartItemEntity item = new CartItemEntity(0, cart.size() + 1, key, price, qty);
+            cart.put(key, item);
 
-            cartList.getItems().add(itemName + ": " + price + " x " + qty + " = " + item.getSubtotal());
+            String line = t(key) + ": " + price + " × " + qty + " = " + String.format("%.2f", item.getSubtotal());
+            cartList.getItems().add(line);
 
-            showAlert(t("added") + " " + itemName);
+            showAlert(t("added") + " " + t(key));
 
             priceField.clear();
             quantityField.clear();
@@ -303,12 +325,12 @@ public class MainViewController extends LocalizationController {
 
         Map<String, Double> result = CartCalculatorService.calculateTotal(cart);
 
-        totalLabel.setText(String.format("%.2f EUR", result.get("total")));
-        discountLabel.setText(String.format("%.2f EUR", result.get("discountAmount")));
-        afterDiscountLabel.setText(String.format("%.2f EUR", result.get("afterDiscount")));
-        taxLabel.setText(String.format("%.2f EUR", result.get("taxAmount")));
-        afterTaxLabel.setText(String.format("%.2f EUR", result.get("afterTax")));
-        finalTotalLabel.setText(String.format("%.2f EUR", result.get("afterTax")));
+        totalLabel.setText(result.get("total") + " EUR");
+        discountLabel.setText(result.get("discountAmount") + " EUR");
+        afterDiscountLabel.setText(result.get("afterDiscount") + " EUR");
+        taxLabel.setText(result.get("taxAmount") + " EUR");
+        finalTotalLabel.setText(result.get("afterTax") + " EUR");
+
     }
 
     @FXML
@@ -323,11 +345,11 @@ public class MainViewController extends LocalizationController {
 
         try {
             // 2. entity.CartRecordEntity
-            CartRecordEntity record = new CartRecordEntity(cart.size(), result.get("afterTax"), currentLocale.getLanguage()
+            CartRecordEntity recordEntity = new CartRecordEntity(cart.size(), result.get("afterTax"), currentLocale.getLanguage()
             );
 
             // 3. save record → get recordId
-            int recordId = recordDao.insert(record);
+            int recordId = recordDao.insert(recordEntity);
 
             if (recordId <= 0) {
                 showAlert("Failed to save cart record.");
@@ -349,16 +371,29 @@ public class MainViewController extends LocalizationController {
         }
 
         // 6. Reset UI
-        cartList.getItems().clear();
-        cart.clear();
-        totalItem.setText("0");
-        priceSummaryBox.getChildren().clear();
+        onBack();
     }
 
     public void onBack() {
+        // 1. Reset UI sections
         cartSection.setVisible(false);
         itemSection.setVisible(true);
-        priceSummaryBox.getChildren().clear();
+
+        // 2. Reset cart data
+        cart.clear();
+        cartList.getItems().clear();
+        totalItem.setText("0");
+
+        // 3. Reset input fields
+        priceField.clear();
+        quantityField.clear();
+
+        // 4. Reset summary box:
+        priceSummaryBox.setVisible(false);
+
+        // 5. Reset item list
+        loadItemList();
+        itemList.getSelectionModel().clearSelection();
     }
 
     /**
