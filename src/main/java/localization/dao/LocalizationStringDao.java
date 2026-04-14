@@ -9,12 +9,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LocalizationStringDao {
+    private static final String ERR_DB = "Database error";
+
+    private static final Logger logger = Logger.getLogger(LocalizationStringDao.class.getName());
+
+    // SonarQube fix: avoid duplicating literal "value"
+    private static final String COL_VALUE = "value";
 
     public void insert(LocalizationStringEntity ls) throws SQLException {
         String sql = "INSERT INTO localization_strings (`key`, value, language) VALUES (?, ?, ?)";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -27,7 +34,6 @@ public class LocalizationStringDao {
 
     public String getValue(String key, String language) throws SQLException {
         String sql = "SELECT value FROM localization_strings WHERE `key` = ? AND language = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -35,7 +41,9 @@ public class LocalizationStringDao {
             ps.setString(2, language);
 
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getString("value");
+            if (rs.next()) {
+                return rs.getString(COL_VALUE);
+            }
         }
         return null;
     }
@@ -50,20 +58,18 @@ public class LocalizationStringDao {
             ps.setString(2, lang);
 
             ResultSet rs = ps.executeQuery();
-
             if (rs.next()) {
                 LocalizationStringEntity entity = new LocalizationStringEntity();
                 entity.setKey(rs.getString("key"));
-                entity.setValue(rs.getString("value"));
+                entity.setValue(rs.getString(COL_VALUE));
                 entity.setLanguage(rs.getString("language"));
                 return entity;
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, ERR_DB, e);
         }
-
-        return null; // không tìm thấy
+        return null;
     }
 
     public void update(LocalizationStringEntity existing) {
@@ -75,11 +81,10 @@ public class LocalizationStringDao {
             ps.setString(1, existing.getValue());
             ps.setString(2, existing.getKey());
             ps.setString(3, existing.getLanguage());
-
             ps.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, ERR_DB, e);
         }
     }
 
@@ -94,14 +99,13 @@ public class LocalizationStringDao {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                map.put(rs.getString("key"), rs.getString("value"));
+                map.put(rs.getString("key"), rs.getString(COL_VALUE));
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, ERR_DB, e);
         }
 
         return map;
     }
-
 }

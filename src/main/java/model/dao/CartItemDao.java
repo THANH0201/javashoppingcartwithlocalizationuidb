@@ -30,8 +30,18 @@ public class CartItemDao {
 
     public List<CartItemEntity> getByCartRecordId(int recordId) throws SQLException {
         List<CartItemEntity> list = new ArrayList<>();
-        String sql = "SELECT * FROM cart_items WHERE cart_record_id = ?";
-
+        String sql = """
+        SELECT
+            id,
+            cart_record_id,
+            item_number,
+            item_name,
+            price,
+            quantity,
+            subtotal
+        FROM cart_items
+        WHERE cart_record_id = ?
+       """;
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 

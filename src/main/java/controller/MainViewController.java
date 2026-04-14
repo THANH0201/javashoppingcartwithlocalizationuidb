@@ -27,10 +27,13 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static localization.utils.I18n.t;
 
 public class MainViewController extends LocalizationController {
+    static Logger logger = Logger.getLogger(MainViewController.class.getName());
     // UI elements
     @I18nAnnotations.Text("time")
     @FXML
@@ -119,7 +122,7 @@ public class MainViewController extends LocalizationController {
     private final Map<String, CartItemEntity> cart = new HashMap<>();
     private final LocalizationStringDao localizationDao = new LocalizationStringDao();
     private final LocalizationService localizationService = new LocalizationService(localizationDao);
-
+    String error = "error.invalid_input";
     /**
      * Initialize controller
      */
@@ -158,9 +161,6 @@ public class MainViewController extends LocalizationController {
                     String city = localZone.getId().substring(localZone.getId().indexOf('/') + 1)
                             .replace("_", " ");
 
-                    // Local time
-                    ZonedDateTime local = ZonedDateTime.now(localZone);
-
                     // UTC time
                     ZonedDateTime utc = ZonedDateTime.now(ZoneId.of("UTC"));
 
@@ -191,8 +191,7 @@ public class MainViewController extends LocalizationController {
             MenuItem item = new MenuItem(lang.getName());
 
             // create Locale from code
-            Locale locale = new Locale(lang.getCode());
-
+            Locale locale = Locale.forLanguageTag(lang.getCode());
             // Font Lao
             if (lang.getCode().equals("lo")) {
                 item.setStyle("-fx-font-family: 'Noto Sans Lao';");
@@ -260,7 +259,7 @@ public class MainViewController extends LocalizationController {
             String key = itemList.getSelectionModel().getSelectedItem();
 
             if (key == null || key.equals("shopping.select.item")) {
-                showAlert(t("error.invalid_input"));
+                showAlert(t(error));
                 return;
             }
 
@@ -282,7 +281,7 @@ public class MainViewController extends LocalizationController {
             totalItem.setText(String.valueOf(cart.size()));
 
         } catch (Exception e) {
-            showAlert(t("error.invalid_input"));
+            showAlert(t(error));
         }
     }
 
@@ -336,7 +335,7 @@ public class MainViewController extends LocalizationController {
     @FXML
     private void onPay() {
         if (cart.isEmpty()) {
-            showAlert(t("error.invalid_input"));
+            showAlert(t(error));
             return;
         }
 
@@ -365,7 +364,7 @@ public class MainViewController extends LocalizationController {
             showAlert(t("thanks"));
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to import Excel", e);
             showAlert("Database error.");
             return;
         }
@@ -402,11 +401,11 @@ public class MainViewController extends LocalizationController {
     private void applyTextDirection(Locale locale) {
         boolean isRTL = locale.getLanguage().equals("ar");
 
-        Platform.runLater(() -> {
+        Platform.runLater(() ->
             rootVBox.setNodeOrientation(
                     isRTL ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT
-            );
-        });
+            )
+        );
     }
 
     /**

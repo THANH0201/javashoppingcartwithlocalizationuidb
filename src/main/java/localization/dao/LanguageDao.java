@@ -9,8 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LanguageDao {
+    static Logger logger = Logger.getLogger(LanguageDao.class.getName());
 
     public List<Language> findAll() {
         List<Language> list = new ArrayList<>();
@@ -28,7 +31,7 @@ public class LanguageDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Unexpected error", e);
         }
 
         return list;

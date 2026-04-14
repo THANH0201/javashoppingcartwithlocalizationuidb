@@ -7,15 +7,15 @@ import java.sql.*;
 
 public class CartRecordDao {
 
-    public int insert(CartRecordEntity record) throws SQLException {
+    public int insert(CartRecordEntity cartRecord) throws SQLException {
         String sql = "INSERT INTO cart_records (total_items, total_cost, language) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setInt(1, record.getTotalItems());
-            ps.setDouble(2, record.getTotalCost());
-            ps.setString(3, record.getLanguage());
+            ps.setInt(1, cartRecord.getTotalItems());
+            ps.setDouble(2, cartRecord.getTotalCost());
+            ps.setString(3, cartRecord.getLanguage());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -25,7 +25,16 @@ public class CartRecordDao {
     }
 
     public CartRecordEntity getById(int id) throws SQLException {
-        String sql = "SELECT * FROM cart_records WHERE id = ?";
+        String sql = """
+        SELECT
+            id,
+            total_items,
+            total_cost,
+            language,
+            created_at
+        FROM cart_records
+        WHERE id = ?
+        """;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

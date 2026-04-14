@@ -1,0 +1,6 @@
+projectKey=thanh_shopping
+serverUrl=http://localhost:9000
+serverVersion=26.3.0.120487
+dashboardUrl=http://localhost:9000/dashboard?id=thanh_shopping
+ceTaskId=37001a33-3844-4254-a538-7c7aa989e062
+ceTaskUrl=http://localhost:9000/api/ce/task?id=37001a33-3844-4254-a538-7c7aa989e062

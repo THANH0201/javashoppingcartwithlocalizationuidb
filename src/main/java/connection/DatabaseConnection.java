@@ -6,12 +6,18 @@ import java.sql.SQLException;
 
 
 public class DatabaseConnection {
+    private DatabaseConnection() {
+        /* This utility class should not be instantiated */
+    }
+
     private static final String DB_URL =
             System.getenv().getOrDefault("DB_URL",
                     "jdbc:mariadb://localhost:3307/shopping_cart_localization");
+    private static final String DB_USER =
+            System.getenv().getOrDefault("DB_USER", "root");
 
-    private static final String DB_USER = "root";
-    private static final String DB_PASSWORD = "123456";
+    private static final String DB_PASSWORD =
+            System.getenv().getOrDefault("DB_PASSWORD", "");
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);

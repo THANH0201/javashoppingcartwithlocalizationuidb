@@ -25,7 +25,7 @@ class LocalizationServiceTest {
     @Test
     void testGetLocalizedStrings_ReturnsDaoResult() {
         // Arrange
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         Map<String, String> fakeMap = Map.of("shopping.title", "Shopping Cart");
         when(dao.findAllByLanguage("en")).thenReturn(fakeMap);
 
@@ -40,7 +40,7 @@ class LocalizationServiceTest {
     @Test
     void testGetLocalizedStrings_ReturnsFallback_WhenDaoReturnsNull() {
         // Arrange
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         when(dao.findAllByLanguage("en")).thenReturn(null);
 
         // Act
@@ -54,7 +54,7 @@ class LocalizationServiceTest {
     @Test
     void testGetLocalizedStrings_ReturnsFallback_WhenDaoReturnsEmpty() {
         // Arrange
-        Locale locale = new Locale("en");
+        Locale locale = Locale.of("en");
         when(dao.findAllByLanguage("en")).thenReturn(Map.of());
 
         // Act

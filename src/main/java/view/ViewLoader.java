@@ -5,23 +5,27 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Locale;
 
-import static view.ViewLoader.loadScene;
 public class ViewLoader {
+    private ViewLoader() {
+        /* This utility class should not be instantiated */
+    }
+    static Logger logger = LoggerFactory.getLogger(ViewLoader.class);
 
     public static void loadScene(Stage stage) throws IOException {
 
         // Load font safely
-        Font f = Font.loadFont(ViewLoader.class.getResourceAsStream("/fonts/NotoSansLao-Regular.ttf"), 12);
+        Font.loadFont(ViewLoader.class.getResourceAsStream("/fonts/NotoSansLao-Regular.ttf"), 12);
         Font f1 = Font.loadFont(ViewLoader.class.getResourceAsStream("/fonts/NotoSansJP-Regular.ttf"), 12);
 
         if (f1 != null) {
-            System.out.println("Loaded font: " + f1.getName());
+            logger.info("Loaded font JP" );
         } else {
-            System.out.println("Font NotoSansJP-Regular.ttf failed to load!");
+            logger.info("Font NotoSansJP-Regular.ttf failed to load!");
         }
 
         // Load FXML
