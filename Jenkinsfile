@@ -64,7 +64,7 @@ pipeline {
                             -Dsonar.projectName=DevOps-Demo ^
                             -Dsonar.sources=src/main/java ^
                             -Dsonar.tests=src/test/java ^
-                            -Dsonar.java.binaries=target/classes
+                            -Dsonar.java.binaries=target/classes^
                             -Dsonar.host.url=http://localhost:9000 ^
                             -Dsonar.login=%SONAR_TOKEN% ^
                     """
