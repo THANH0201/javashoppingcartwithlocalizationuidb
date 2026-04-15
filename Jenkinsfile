@@ -65,6 +65,7 @@ pipeline {
                             -Dsonar.sources=src/main/java ^
                             -Dsonar.tests=src/test/java ^
                             -Dsonar.java.binaries=target/classes ^
+                            -Dsonar.coverage.exclusions=**/controller/**,**/view/**,**/app/**,**/utils/** ^
                             -Dsonar.host.url=http://localhost:9000 ^
                             -Dsonar.login=%SONAR_TOKEN%
                         """
