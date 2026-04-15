@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools{
+        jdk 'jdk21'
         maven 'maven3'
     }
 
     environment {
         PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
-        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'  // Adjust to your actual JDK pat
         SONARQUBE_SERVER = 'SonarQubeServer'  // The name of the SonarQube server configured in Jenkins
         // Store the token securely in Jenkins
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub'
