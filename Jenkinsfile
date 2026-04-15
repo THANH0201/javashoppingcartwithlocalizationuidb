@@ -60,8 +60,8 @@ pipeline {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         bat """
                             ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
-                            -Dsonar.projectKey=devops-demo ^
-                            -Dsonar.projectName=DevOps-Demo ^
+                            -Dsonar.projectKey=Thanh-shopping ^
+                            -Dsonar.projectName=Thanh-shopping ^
                             -Dsonar.sources=src/main/java ^
                             -Dsonar.tests=src/test/java ^
                             -Dsonar.java.binaries=target/classes ^
