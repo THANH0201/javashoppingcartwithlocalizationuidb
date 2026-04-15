@@ -1,5 +1,7 @@
 FROM eclipse-temurin:21-jre
 
+ENV DB_URL=jdbc:mariadb://host.docker.internal:3307/shopping_cart_localization
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
