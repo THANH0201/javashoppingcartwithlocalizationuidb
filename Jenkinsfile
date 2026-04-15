@@ -6,6 +6,9 @@ pipeline {
 
     environment {
         PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'  // Adjust to your actual JDK pat
+        SONARQUBE_SERVER = 'SonarQubeServer'  // The name of the SonarQube server configured in Jenkins
+        // Store the token securely in Jenkins
         DOCKERHUB_CREDENTIALS_ID = 'dockerhub'
         DOCKER_IMAGE = 'thanh0201/javashoppingcartwithlocalizationuidb'
         DOCKER_TAG = 'latest'
@@ -48,6 +51,23 @@ pipeline {
                     } else {
                         bat 'mvn test'
                     }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQubeServer') {
+                    withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                        bat """
+                            ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
+                            -Dsonar.projectKey=devops-demo ^
+                            -Dsonar.projectName=DevOps-Demo ^
+                            -Dsonar.sources=src/main/java ^
+                            -Dsonar.tests=src/test/java ^
+                            -Dsonar.java.binaries=target/classes
+                            -Dsonar.host.url=http://localhost:9000 ^
+                            -Dsonar.login=%SONAR_TOKEN% ^
+                    """
                 }
             }
         }
